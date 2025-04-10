@@ -515,14 +515,24 @@ body {
     }
 }
 
+.page-wrapper {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.content {
+    flex: 1;
+    padding: 20px;
+    position: relative;
+    z-index: 1;
+}
+
 .site-footer {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 12px 0;
     text-align: center;
-    z-index: 10;
+    padding: 12px 0;
+    background: rgba(30, 30, 46, 0.0);
+    border-top: 1px solid rgba(255, 255, 255, 0.0);
 }
 
 .site-footer a {
