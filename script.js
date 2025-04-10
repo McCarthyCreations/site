@@ -4,51 +4,110 @@ class Blob {
         this.element = document.createElement('div');
         this.element.className = 'blob';
         
+        // Initialize properties
         this.size = Math.random() * 150 + 100;
-        this.x = Math.random() * (window.innerWidth - this.size);
-        this.y = Math.random() * (window.innerHeight - this.size);
+        this.baseSize = this.size;
+        this.x = Math.random() * window.innerWidth;
+        this.y = Math.random() * window.innerHeight;
         this.vx = (Math.random() - 0.5) * 2;
         this.vy = (Math.random() - 0.5) * 2;
         this.mass = this.size / 50;
         this.color = color;
+        this.squishFactor = 0;
         
+        // Visual setup
         this.element.style.width = `${this.size}px`;
         this.element.style.height = `${this.size}px`;
         this.element.style.background = this.color;
+        this.element.style.borderRadius = '50%';
         this.updatePosition();
         
         container.appendChild(this.element);
     }
 
     updatePosition() {
-        this.element.style.transform = `translate(${this.x}px, ${this.y}px)`;
+        // Asteroids-style wrapping
+        if (this.x < -this.size) this.x = window.innerWidth + this.size;
+        if (this.x > window.innerWidth + this.size) this.x = -this.size;
+        if (this.y < -this.size) this.y = window.innerHeight + this.size;
+        if (this.y > window.innerHeight + this.size) this.y = -this.size;
+
+        // Apply squish effect
+        const squishAmount = 0.2 * this.squishFactor;
+        const scaleX = 1 + squishAmount;
+        const scaleY = 1 - squishAmount;
+        
+        this.element.style.transform = `translate(${this.x}px, ${this.y}px) scale(${scaleX}, ${scaleY})`;
+        this.squishFactor *= 0.9; // Gradually reduce squish
     }
 
-    update() {
-        // Minimal damping to prevent complete stop
-        this.vx *= 0.999;
-        this.vy *= 0.999;
+    update(blobs) {
+        // Only check for collisions (no gravity/attraction)
+        this.checkCollisions(blobs);
         
+        // Update position with velocity
         this.x += this.vx;
         this.y += this.vy;
 
-        // Boundary collision with minimal energy loss
-        if (this.x <= 0 || this.x >= window.innerWidth - this.size) {
-            this.vx *= -0.95;
-            this.x = Math.max(0, Math.min(window.innerWidth - this.size, this.x));
-        }
-        if (this.y <= 0 || this.y >= window.innerHeight - this.size) {
-            this.vy *= -0.95;
-            this.y = Math.max(0, Math.min(window.innerHeight - this.size, this.y));
+        // Apply very slight damping (0.2% per frame)
+        this.vx *= 0.998;
+        this.vy *= 0.998;
+
+        // Enforce maximum velocity
+        const maxSpeed = 8;
+        const speed = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
+        if (speed > maxSpeed) {
+            this.vx = (this.vx / speed) * maxSpeed;
+            this.vy = (this.vy / speed) * maxSpeed;
         }
 
         this.updatePosition();
     }
 
+    checkCollisions(blobs) {
+        const repelStrength = 0.5; // Strength of repulsion when colliding
+        
+        blobs.forEach(other => {
+            if (other === this) return;
+            
+            // Calculate distance with wrapping
+            let dx = other.x - this.x;
+            let dy = other.y - this.y;
+            
+            // Find shortest distance (accounting for wrap)
+            if (Math.abs(dx) > window.innerWidth / 2) {
+                dx = dx > 0 ? dx - window.innerWidth : dx + window.innerWidth;
+            }
+            if (Math.abs(dy) > window.innerHeight / 2) {
+                dy = dy > 0 ? dy - window.innerHeight : dy + window.innerHeight;
+            }
+            
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            const minDistance = (this.size/2) + (other.size/2);
+            
+            if (distance < minDistance) {
+                // Collision - strong repulsion
+                const angle = Math.atan2(dy, dx);
+                const force = repelStrength * (minDistance - distance) / minDistance;
+                
+                this.vx -= Math.cos(angle) * force;
+                this.vy -= Math.sin(angle) * force;
+                other.vx += Math.cos(angle) * force;
+                other.vy += Math.sin(angle) * force;
+                
+                // Squish effect
+                const collisionStrength = Math.min(1, (minDistance - distance) / 10);
+                this.squishFactor = Math.max(this.squishFactor, collisionStrength);
+                other.squishFactor = Math.max(other.squishFactor, collisionStrength);
+            }
+        });
+    }
+
     applyForce(forceX, forceY) {
-        // Strong force application
-        this.vx += forceX * 3;
-        this.vy += forceY * 3;
+        // Apply force with mass consideration
+        this.vx += forceX * 1.5;
+        this.vy += forceY * 1.5;
+        this.squishFactor = 1; // Visual feedback
     }
 }
 
@@ -80,43 +139,15 @@ class BlobAnimator {
         this.setupDeviceMotion();
         
         // Start animation loop
-        this.animationId = requestAnimationFrame(this.animate.bind(this));
-        
-        // Handle resize
+        this.animate();
         window.addEventListener('resize', this.handleResize.bind(this));
     }
     
     animate() {
-        // Update physics
-        this.blobs.forEach(blob => blob.update());
+        // Update all blobs with collision physics only
+        this.blobs.forEach(blob => blob.update(this.blobs));
         
-        // Check collisions between all blob pairs
-        for (let i = 0; i < this.blobs.length; i++) {
-            for (let j = i + 1; j < this.blobs.length; j++) {
-                this.checkCollision(this.blobs[i], this.blobs[j]);
-            }
-        }
-        
-        this.animationId = requestAnimationFrame(this.animate.bind(this));
-    }
-    
-    checkCollision(blob1, blob2) {
-        const dx = (blob1.x + blob1.size/2) - (blob2.x + blob2.size/2);
-        const dy = (blob1.y + blob1.size/2) - (blob2.y + blob2.size/2);
-        const distance = Math.sqrt(dx * dx + dy * dy);
-        const minDist = (blob1.size/2) + (blob2.size/2);
-        
-        if (distance < minDist) {
-            const angle = Math.atan2(dy, dx);
-            const totalMass = blob1.mass + blob2.mass;
-            const force = 0.05 * (minDist - distance);
-            
-            // Apply repulsion force
-            blob1.vx += Math.cos(angle) * force * (blob2.mass/totalMass);
-            blob1.vy += Math.sin(angle) * force * (blob2.mass/totalMass);
-            blob2.vx -= Math.cos(angle) * force * (blob1.mass/totalMass);
-            blob2.vy -= Math.sin(angle) * force * (blob1.mass/totalMass);
-        }
+        requestAnimationFrame(this.animate.bind(this));
     }
     
     setupLogoEffects() {
@@ -151,7 +182,7 @@ class BlobAnimator {
     triggerShake(strongForce = false) {
         // Apply forces to blobs
         this.blobs.forEach(blob => {
-            const forceMultiplier = strongForce ? 5 : 3;
+            const forceMultiplier = strongForce ? 6 : 3;
             const forceX = (Math.random() - 0.5) * forceMultiplier;
             const forceY = (Math.random() - 0.5) * forceMultiplier;
             blob.applyForce(forceX, forceY);
@@ -194,8 +225,8 @@ class BlobAnimator {
     
     handleResize() {
         this.blobs.forEach(blob => {
-            blob.x = Math.max(0, Math.min(window.innerWidth - blob.size, blob.x));
-            blob.y = Math.max(0, Math.min(window.innerHeight - blob.size, blob.y));
+            blob.x = Math.max(-blob.size, Math.min(window.innerWidth + blob.size, blob.x));
+            blob.y = Math.max(-blob.size, Math.min(window.innerHeight + blob.size, blob.y));
             blob.updatePosition();
         });
     }
