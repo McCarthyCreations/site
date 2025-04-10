@@ -22,15 +22,21 @@ class Blob {
         this.element.style.borderRadius = '50%';
         this.updatePosition();
         
+        // Create pulse element
+        this.pulse = document.createElement('div');
+        this.pulse.className = 'pulse';
+        this.pulse.style.background = this.color;
+        this.element.appendChild(this.pulse);
+        
         container.appendChild(this.element);
     }
 
     updatePosition() {
-        // Asteroids-style wrapping
-        if (this.x < -this.size) this.x = window.innerWidth + this.size;
-        if (this.x > window.innerWidth + this.size) this.x = -this.size;
-        if (this.y < -this.size) this.y = window.innerHeight + this.size;
-        if (this.y > window.innerHeight + this.size) this.y = -this.size;
+        // Fix: Proper screen wrapping
+        if (this.x < -this.size) this.x = window.innerWidth + this.size/2;
+        if (this.x > window.innerWidth + this.size) this.x = -this.size/2;
+        if (this.y < -this.size) this.y = window.innerHeight + this.size/2;
+        if (this.y > window.innerHeight + this.size) this.y = -this.size/2;
 
         // Apply squish effect
         const squishAmount = 0.2 * this.squishFactor;
@@ -41,15 +47,22 @@ class Blob {
         this.squishFactor *= 0.9; // Gradually reduce squish
     }
 
+    triggerPulse() {
+        // Fix: Proper pulse animation
+        this.pulse.style.animation = 'none';
+        this.pulse.offsetHeight; // Trigger reflow
+        this.pulse.style.animation = 'pulse-animation 0.6s ease-out forwards';
+    }
+
     update(blobs) {
-        // Only check for collisions (no gravity/attraction)
+        // Check for collisions
         this.checkCollisions(blobs);
         
         // Update position with velocity
         this.x += this.vx;
         this.y += this.vy;
 
-        // Apply very slight damping (0.2% per frame)
+        // Apply very slight damping
         this.vx *= 0.998;
         this.vy *= 0.998;
 
@@ -65,16 +78,16 @@ class Blob {
     }
 
     checkCollisions(blobs) {
-        const repelStrength = 0.5; // Strength of repulsion when colliding
+        const repelStrength = 0.5;
         
         blobs.forEach(other => {
             if (other === this) return;
             
-            // Calculate distance with wrapping
+            // Calculate distance with proper wrapping
             let dx = other.x - this.x;
             let dy = other.y - this.y;
             
-            // Find shortest distance (accounting for wrap)
+            // Fix: More accurate wrapping distance calculation
             if (Math.abs(dx) > window.innerWidth / 2) {
                 dx = dx > 0 ? dx - window.innerWidth : dx + window.innerWidth;
             }
@@ -86,7 +99,6 @@ class Blob {
             const minDistance = (this.size/2) + (other.size/2);
             
             if (distance < minDistance) {
-                // Collision - strong repulsion
                 const angle = Math.atan2(dy, dx);
                 const force = repelStrength * (minDistance - distance) / minDistance;
                 
@@ -95,7 +107,6 @@ class Blob {
                 other.vx += Math.cos(angle) * force;
                 other.vy += Math.sin(angle) * force;
                 
-                // Squish effect
                 const collisionStrength = Math.min(1, (minDistance - distance) / 10);
                 this.squishFactor = Math.max(this.squishFactor, collisionStrength);
                 other.squishFactor = Math.max(other.squishFactor, collisionStrength);
@@ -104,10 +115,10 @@ class Blob {
     }
 
     applyForce(forceX, forceY) {
-        // Apply force with mass consideration
         this.vx += forceX * 1.5;
         this.vy += forceY * 1.5;
-        this.squishFactor = 1; // Visual feedback
+        this.squishFactor = 1;
+        this.triggerPulse(); // Fix: Ensure pulse triggers on force
     }
 }
 
@@ -122,13 +133,12 @@ class BlobAnimator {
             'rgba(255, 170, 165, 0.9)',  // red
             'rgba(255, 211, 182, 0.9)'   // yellow
         ];
-        this.sparkles = [];
         
         this.init();
     }
     
     init() {
-        // Create blobs - one of each color
+        // Create blobs
         this.colorOptions.forEach(color => {
             this.blobs.push(new Blob(this.container, color));
         });
@@ -144,16 +154,12 @@ class BlobAnimator {
     }
     
     animate() {
-        // Update all blobs with collision physics only
         this.blobs.forEach(blob => blob.update(this.blobs));
-        
         requestAnimationFrame(this.animate.bind(this));
     }
     
     setupLogoEffects() {
         const logo = document.getElementById('logo');
-        
-        // Create sparkle elements
         const sparkle1 = document.createElement('div');
         sparkle1.className = 'sparkle';
         logo.appendChild(sparkle1);
@@ -162,33 +168,30 @@ class BlobAnimator {
         sparkle2.className = 'sparkle';
         logo.appendChild(sparkle2);
         
-        this.sparkles = [sparkle1, sparkle2];
+        logo.addEventListener('mouseenter', () => {
+            const randomColor = this.colorOptions[Math.floor(Math.random() * this.colorOptions.length)];
+            sparkle1.style.background = `radial-gradient(circle, ${randomColor} 0%, transparent 70%)`;
+            sparkle2.style.background = `radial-gradient(circle, white 0%, transparent 70%)`;
+            this.triggerShake(true);
+        });
         
-        // Hover effects
-        logo.addEventListener('mouseenter', () => this.handleLogoInteraction());
-        logo.addEventListener('touchstart', () => this.handleLogoInteraction(), { passive: true });
-    }
-    
-    handleLogoInteraction() {
-        // Random color from blob colors
-        const randomColor = this.colorOptions[Math.floor(Math.random() * this.colorOptions.length)];
-        this.sparkles[0].style.background = `radial-gradient(circle, ${randomColor} 0%, transparent 70%)`;
-        this.sparkles[1].style.background = `radial-gradient(circle, white 0%, transparent 70%)`;
-        
-        // Trigger strong shake
-        this.triggerShake(true);
+        logo.addEventListener('touchstart', () => {
+            const randomColor = this.colorOptions[Math.floor(Math.random() * this.colorOptions.length)];
+            sparkle1.style.background = `radial-gradient(circle, ${randomColor} 0%, transparent 70%)`;
+            sparkle2.style.background = `radial-gradient(circle, white 0%, transparent 70%)`;
+            this.triggerShake(true);
+        }, { passive: true });
     }
     
     triggerShake(strongForce = false) {
-        // Apply forces to blobs
         this.blobs.forEach(blob => {
             const forceMultiplier = strongForce ? 6 : 3;
-            const forceX = (Math.random() - 0.5) * forceMultiplier;
-            const forceY = (Math.random() - 0.5) * forceMultiplier;
-            blob.applyForce(forceX, forceY);
+            blob.applyForce(
+                (Math.random() - 0.5) * forceMultiplier,
+                (Math.random() - 0.5) * forceMultiplier
+            );
         });
         
-        // Visual shake effect
         const content = document.querySelector('.content');
         content.classList.add('shake-effect');
         setTimeout(() => content.classList.remove('shake-effect'), 500);
@@ -204,20 +207,12 @@ class BlobAnimator {
     setupDeviceMotion() {
         if (window.DeviceMotionEvent) {
             let lastShakeTime = 0;
-            const threshold = 15;
-            
             window.addEventListener('devicemotion', (e) => {
-                const currentTime = Date.now();
-                if (currentTime - lastShakeTime < 1000) return;
-                
-                const acceleration = e.accelerationIncludingGravity;
-                if (!acceleration) return;
-                
-                if (Math.abs(acceleration.x) > threshold || 
-                    Math.abs(acceleration.y) > threshold || 
-                    Math.abs(acceleration.z) > threshold) {
+                if (Date.now() - lastShakeTime < 1000) return;
+                const acc = e.accelerationIncludingGravity;
+                if (acc && (Math.abs(acc.x) > 15 || Math.abs(acc.y) > 15 || Math.abs(acc.z) > 15)) {
                     this.triggerShake();
-                    lastShakeTime = currentTime;
+                    lastShakeTime = Date.now();
                 }
             });
         }
@@ -227,12 +222,10 @@ class BlobAnimator {
         this.blobs.forEach(blob => {
             blob.x = Math.max(-blob.size, Math.min(window.innerWidth + blob.size, blob.x));
             blob.y = Math.max(-blob.size, Math.min(window.innerHeight + blob.size, blob.y));
-            blob.updatePosition();
         });
     }
 }
 
-// Initialize when DOM loads
 document.addEventListener('DOMContentLoaded', () => {
     new BlobAnimator();
 });

@@ -229,3 +229,310 @@ body {
         transform: scale(1.5);
     }
 }
+
+.pulse {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, width 0.3s ease, height 0.3s ease;
+    z-index: -1;
+    filter: blur(10px);
+    mix-blend-mode: screen;
+}/* Base Styles */
+body {
+    font-family: 'Montserrat', sans-serif;
+    margin: 0;
+    padding: 0;
+    color: #e0e0e0;
+    background: #1a1a2e;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* Blob Container */
+#blobs-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
+}
+
+.blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0.8;
+    will-change: transform;
+    mix-blend-mode: screen;
+    transform: translate3d(0, 0, 0);
+}
+
+/* Pulse Effect */
+.pulse {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, width 0.3s ease, height 0.3s ease;
+    z-index: -1;
+    filter: blur(10px);
+    mix-blend-mode: screen;
+}
+
+/* Content */
+.content {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.container {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 30px;
+    text-align: center;
+    background: rgba(30, 30, 46, 0.85);
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 40px;
+}
+
+/* Logo */
+.logo-img {
+    width: 200px;
+    height: auto;
+    margin-bottom: 15px;
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.2));
+    transition: all 0.3s ease;
+    position: relative;
+    cursor: pointer;
+}
+
+.logo-img:hover, .logo-img:active {
+    transform: scale(1.5);
+}
+
+.profile p {
+    margin: 10px 0 30px;
+    color: #b8b8b8;
+    font-size: 1rem;
+}
+
+/* Links */
+.links {
+    margin: 30px 0;
+}
+
+.link-btn, .payment-btn, .location-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: #e0e0e0;
+    text-decoration: none;
+    padding: 15px;
+    margin: 15px 0;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.link-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.link-btn:hover {
+    background: rgba(108, 92, 231, 0.3);
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(108, 92, 231, 0.2);
+}
+
+/* Store Locations */
+.store-locations {
+    margin: 30px 0;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.store-locations h3 {
+    color: #b8b8b8;
+    margin-bottom: 15px;
+}
+
+.location-btn {
+    background: rgba(100, 149, 237, 0.1);
+    border: 1px solid rgba(100, 149, 237, 0.3);
+}
+
+.location-btn:hover {
+    background: rgba(100, 149, 237, 0.3);
+    transform: translateY(-3px);
+}
+
+/* Payment Links */
+.payment-links {
+    margin: 30px 0;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.payment-links h3 {
+    color: #b8b8b8;
+    margin-bottom: 15px;
+}
+
+.payment-btn {
+    background: rgba(0, 200, 83, 0.1);
+    border: 1px solid rgba(0, 200, 83, 0.3);
+}
+
+.payment-btn:hover {
+    background: rgba(0, 200, 83, 0.3);
+    transform: translateY(-3px);
+}
+
+/* Social Icons */
+.social-icons {
+    margin: 30px 0 10px;
+}
+
+.social-icons a {
+    color: #b8b8b8;
+    font-size: 22px;
+    margin: 0 12px;
+    transition: all 0.3s ease;
+}
+
+.social-icons a:hover {
+    color: #6c5ce7;
+    transform: scale(1.2);
+}
+
+/* Shake Button */
+.shake-button {
+    display: none;
+    background: rgba(108, 92, 231, 0.3);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50px;
+    padding: 12px 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 20px auto 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.shake-button:hover {
+    background: rgba(108, 92, 231, 0.5);
+    transform: scale(1.05);
+}
+
+/* Animations */
+@keyframes shake {
+    0%, 100% { transform: translate3d(0, 0, 0); }
+    10%, 30%, 50%, 70%, 90% { transform: translate3d(-5px, 0, 0); }
+    20%, 40%, 60%, 80% { transform: translate3d(5px, 0, 0); }
+}
+
+.shake-effect {
+    animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes sparkle {
+    0% { opacity: 0; transform: scale(0.5); }
+    50% { opacity: 1; }
+    100% { opacity: 0; transform: scale(1.5); }
+}
+
+.sparkle {
+    position: absolute;
+    top: -15px;
+    left: -15px;
+    right: -15px;
+    bottom: -15px;
+    border-radius: 50%;
+    pointer-events: none;
+    animation: sparkle 1.5s infinite;
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+    .container {
+        padding: 20px;
+        margin: 20px auto;
+    }
+    
+    .shake-button {
+        display: block;
+    }
+}
+
+@media (hover: none) {
+    .logo-img:active {
+        transform: scale(1.5);
+    }
+}
+
+.pulse {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, width 0.3s ease, height 0.3s ease;
+    z-index: -1;
+    filter: blur(10px);
+    mix-blend-mode: screen;
+    will-change: transform, opacity;
+}
+
+@keyframes pulse-animation {
+    0% {
+        transform: translate(-50%, -50%) scale(0.8);
+        opacity: 0.7;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1.5);
+        opacity: 0;
+    }
+}
+
+.site-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 12px 0;
+    text-align: center;
+    z-index: 10;
+}
+
+.site-footer a {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 12px;
+    font-family: 'Montserrat', sans-serif;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.site-footer a:hover {
+    color: rgba(255, 255, 255, 0.9);
+}
