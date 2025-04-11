@@ -7,250 +7,50 @@ body {
     background: #1a1a2e;
     min-height: 100vh;
     overflow-x: hidden;
+    transition: background-color 0.5s ease;
 }
 
-/* Blob Container */
-#blobs-container {
+/* Preloader */
+#preloader {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: -1;
-    overflow: hidden;
-}
-
-.blob {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(60px);
-    opacity: 0.8;
-    will-change: transform;
-    mix-blend-mode: screen;
-    transform: translate3d(0, 0, 0);
-}
-
-/* Content */
-.content {
-    position: relative;
-    z-index: 1;
-    min-height: 100vh;
-    padding: 20px;
-    box-sizing: border-box;
-}
-
-.container {
-    max-width: 500px;
-    margin: 0 auto;
-    padding: 30px;
-    text-align: center;
-    background: rgba(30, 30, 46, 0.85);
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    margin-bottom: 40px;
-}
-
-/* Logo */
-.logo-img {
-    width: 200px;
-    height: auto;
-    margin-bottom: 15px;
-    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.2));
-    transition: all 0.3s ease;
-    position: relative;
-    cursor: pointer;
-}
-
-.logo-img:hover, .logo-img:active {
-    transform: scale(1.5);
-}
-
-.profile p {
-    margin: 10px 0 30px;
-    color: #b8b8b8;
-    font-size: 1rem;
-}
-
-/* Links */
-.links {
-    margin: 30px 0;
-}
-
-.link-btn, .payment-btn, .location-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    color: #e0e0e0;
-    text-decoration: none;
-    padding: 15px;
-    margin: 15px 0;
-    border-radius: 8px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-}
-
-.link-btn {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.link-btn:hover {
-    background: rgba(108, 92, 231, 0.3);
-    transform: translateY(-3px);
-    box-shadow: 0 5px 15px rgba(108, 92, 231, 0.2);
-}
-
-/* Store Locations */
-.store-locations {
-    margin: 30px 0;
-    padding-top: 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.store-locations h3 {
-    color: #b8b8b8;
-    margin-bottom: 15px;
-}
-
-.location-btn {
-    background: rgba(100, 149, 237, 0.1);
-    border: 1px solid rgba(100, 149, 237, 0.3);
-}
-
-.location-btn:hover {
-    background: rgba(100, 149, 237, 0.3);
-    transform: translateY(-3px);
-}
-
-/* Payment Links */
-.payment-links {
-    margin: 30px 0;
-    padding-top: 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.payment-links h3 {
-    color: #b8b8b8;
-    margin-bottom: 15px;
-}
-
-.payment-btn {
-    background: rgba(0, 200, 83, 0.1);
-    border: 1px solid rgba(0, 200, 83, 0.3);
-}
-
-.payment-btn:hover {
-    background: rgba(0, 200, 83, 0.3);
-    transform: translateY(-3px);
-}
-
-/* Social Icons */
-.social-icons {
-    margin: 30px 0 10px;
-}
-
-.social-icons a {
-    color: #b8b8b8;
-    font-size: 22px;
-    margin: 0 12px;
-    transition: all 0.3s ease;
-}
-
-.social-icons a:hover {
-    color: #6c5ce7;
-    transform: scale(1.2);
-}
-
-/* Shake Button */
-.shake-button {
-    display: none;
-    background: rgba(108, 92, 231, 0.3);
-    color: white;
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    border-radius: 50px;
-    padding: 12px 24px;
-    font-size: 1rem;
-    font-weight: 600;
-    margin: 20px auto 0;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.shake-button:hover {
-    background: rgba(108, 92, 231, 0.5);
-    transform: scale(1.05);
-}
-
-/* Animations */
-@keyframes shake {
-    0%, 100% { transform: translate3d(0, 0, 0); }
-    10%, 30%, 50%, 70%, 90% { transform: translate3d(-5px, 0, 0); }
-    20%, 40%, 60%, 80% { transform: translate3d(5px, 0, 0); }
-}
-
-.shake-effect {
-    animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
-}
-
-@keyframes sparkle {
-    0% { opacity: 0; transform: scale(0.5); }
-    50% { opacity: 1; }
-    100% { opacity: 0; transform: scale(1.5); }
-}
-
-.sparkle {
-    position: absolute;
-    top: -15px;
-    left: -15px;
-    right: -15px;
-    bottom: -15px;
-    border-radius: 50%;
-    pointer-events: none;
-    animation: sparkle 1.5s infinite;
-}
-
-/* Mobile styles */
-@media (max-width: 768px) {
-    .container {
-        padding: 20px;
-        margin: 20px auto;
-    }
-    
-    .shake-button {
-        display: block;
-    }
-}
-
-@media (hover: none) {
-    .logo-img:active {
-        transform: scale(1.5);
-    }
-}
-
-.pulse {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s ease, width 0.3s ease, height 0.3s ease;
-    z-index: -1;
-    filter: blur(10px);
-    mix-blend-mode: screen;
-}/* Base Styles */
-body {
-    font-family: 'Montserrat', sans-serif;
-    margin: 0;
-    padding: 0;
-    color: #e0e0e0;
     background: #1a1a2e;
-    min-height: 100vh;
-    overflow-x: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    transition: opacity 0.5s ease;
+}
+
+.spinner {
+    display: flex;
+    gap: 15px;
+}
+
+.blob-spinner {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    animation: spinner-bounce 1s infinite ease-in-out;
+    filter: blur(5px);
+}
+
+.blob-spinner:nth-child(1) {
+    animation-delay: 0s;
+}
+.blob-spinner:nth-child(2) {
+    animation-delay: 0.2s;
+}
+.blob-spinner:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes spinner-bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
 }
 
 /* Blob Container */
@@ -272,21 +72,14 @@ body {
     will-change: transform;
     mix-blend-mode: screen;
     transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    transform: translateZ(0);
 }
 
-/* Pulse Effect */
-.pulse {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s ease, width 0.3s ease, height 0.3s ease;
-    z-index: -1;
-    filter: blur(10px);
-    mix-blend-mode: screen;
+@media (max-width: 768px) {
+    .blob {
+        filter: blur(40px);
+    }
 }
 
 /* Content */
@@ -423,23 +216,23 @@ body {
     transform: scale(1.2);
 }
 
-/* Shake Button */
+/* Buttons */
 .shake-button {
-    display: none;
-    background: rgba(108, 92, 231, 0.3);
+    background: rgba(255, 255, 255, 0.1);
     color: white;
     border: 2px solid rgba(255, 255, 255, 0.2);
     border-radius: 50px;
     padding: 12px 24px;
     font-size: 1rem;
     font-weight: 600;
-    margin: 20px auto 0;
+    margin: 20px auto;
     cursor: pointer;
     transition: all 0.3s ease;
+    display: none;
 }
 
 .shake-button:hover {
-    background: rgba(108, 92, 231, 0.5);
+    background: rgba(255, 255, 255, 0.2);
     transform: scale(1.05);
 }
 
@@ -469,24 +262,6 @@ body {
     border-radius: 50%;
     pointer-events: none;
     animation: sparkle 1.5s infinite;
-}
-
-/* Mobile styles */
-@media (max-width: 768px) {
-    .container {
-        padding: 20px;
-        margin: 20px auto;
-    }
-    
-    .shake-button {
-        display: block;
-    }
-}
-
-@media (hover: none) {
-    .logo-img:active {
-        transform: scale(1.5);
-    }
 }
 
 .pulse {
@@ -515,19 +290,25 @@ body {
     }
 }
 
-.page-wrapper {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+/* Theme Notification */
+#theme-notification {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    z-index: 1000;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
 }
 
-.content {
-    flex: 1;
-    padding: 20px;
-    position: relative;
-    z-index: 1;
-}
-
+/* Footer */
 .site-footer {
     text-align: center;
     padding: 12px 0;
@@ -545,4 +326,22 @@ body {
 
 .site-footer a:hover {
     color: rgba(255, 255, 255, 0.9);
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+    .container {
+        padding: 20px;
+        margin: 20px auto;
+    }
+    
+    .shake-button {
+        display: block;
+    }
+}
+
+@media (hover: none) {
+    .logo-img:active {
+        transform: scale(1.5);
+    }
 }

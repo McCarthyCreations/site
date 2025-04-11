@@ -14,6 +14,8 @@ class Blob {
         this.mass = this.size / 50;
         this.color = color;
         this.squishFactor = 0;
+        this.collisionCount = 0;
+        this.lastCollisionFrame = 0;
         
         // Visual setup
         this.element.style.width = `${this.size}px`;
@@ -48,7 +50,6 @@ class Blob {
     }
 
     triggerPulse() {
-        // Fix: Proper pulse animation
         this.pulse.style.animation = 'none';
         this.pulse.offsetHeight; // Trigger reflow
         this.pulse.style.animation = 'pulse-animation 0.6s ease-out forwards';
@@ -78,6 +79,12 @@ class Blob {
     }
 
     checkCollisions(blobs) {
+        // Skip collision checks if we just had one
+        if (this.collisionCount > 0 && performance.now() - this.lastCollisionFrame < 16) {
+            this.collisionCount--;
+            return;
+        }
+
         const repelStrength = 0.5;
         
         blobs.forEach(other => {
@@ -99,6 +106,9 @@ class Blob {
             const minDistance = (this.size/2) + (other.size/2);
             
             if (distance < minDistance) {
+                this.collisionCount = 3; // Skip next 3 frames
+                this.lastCollisionFrame = performance.now();
+                
                 const angle = Math.atan2(dy, dx);
                 const force = repelStrength * (minDistance - distance) / minDistance;
                 
@@ -118,7 +128,7 @@ class Blob {
         this.vx += forceX * 1.5;
         this.vy += forceY * 1.5;
         this.squishFactor = 1;
-        this.triggerPulse(); // Fix: Ensure pulse triggers on force
+        this.triggerPulse();
     }
 }
 
@@ -126,20 +136,94 @@ class BlobAnimator {
     constructor() {
         this.container = document.getElementById('blobs-container');
         this.blobs = [];
-        this.colorOptions = [
-            'rgba(168, 230, 207, 0.9)',  // green
-            'rgba(212, 165, 230, 0.9)',  // purple
-            'rgba(165, 199, 230, 0.9)',  // blue
-            'rgba(255, 170, 165, 0.9)',  // red
-            'rgba(255, 211, 182, 0.9)'   // yellow
+        this.themes = [
+            { // Normal (Original)
+                name: "Normal",
+                colors: [
+                    'rgba(168, 230, 207, 0.9)',  // green
+                    'rgba(212, 165, 230, 0.9)',  // purple
+                    'rgba(165, 199, 230, 0.9)',  // blue
+                    'rgba(255, 170, 165, 0.9)',  // red
+                    'rgba(255, 211, 182, 0.9)'   // yellow
+                ],
+                bg: '#1a1a2e'
+            },
+            { // Winter
+                name: "Winter",
+                colors: [
+                    'rgba(200, 230, 255, 0.9)',  // light blue
+                    'rgba(220, 240, 255, 0.9)',  // pale blue
+                    'rgba(180, 220, 255, 0.9)',  // medium blue
+                    'rgba(230, 240, 250, 0.9)',  // frost white
+                    'rgba(160, 210, 255, 0.9)'   // deep winter blue
+                ],
+                bg: '#0e1a2e'
+            },
+            { // Fall
+                name: "Fall",
+                colors: [
+                    'rgba(230, 170, 100, 0.9)',  // pumpkin
+                    'rgba(200, 120, 80, 0.9)',   // rust
+                    'rgba(230, 150, 90, 0.9)',   // amber
+                    'rgba(180, 100, 60, 0.9)',   // cinnamon
+                    'rgba(210, 140, 70, 0.9)'    // caramel
+                ],
+                bg: '#2e1a0e'
+            },
+            { // Summer
+                name: "Summer",
+                colors: [
+                    'rgba(255, 200, 100, 0.9)',  // sunshine
+                    'rgba(100, 230, 180, 0.9)',  // mint
+                    'rgba(255, 120, 120, 0.9)',  // coral
+                    'rgba(100, 200, 255, 0.9)',  // sky blue
+                    'rgba(230, 100, 230, 0.9)'   // pink
+                ],
+                bg: '#1a2e1a'
+            },
+            { // Chaotic
+                name: "Chaotic",
+                colors: [
+                    'rgba(255, 0, 100, 0.9)',    // hot pink
+                    'rgba(0, 255, 200, 0.9)',    // electric teal
+                    'rgba(255, 200, 0, 0.9)',    // bright yellow
+                    'rgba(150, 0, 255, 0.9)',    // purple
+                    'rgba(0, 255, 50, 0.9)'      // neon green
+                ],
+                bg: '#000000'
+            }
         ];
+        this.currentTheme = 0;
+        this.lastShakeTime = 0;
+        this.themeChangeCooldown = 2000; // 2 seconds between theme changes
         
+        this.setupPreloader();
         this.init();
     }
     
+    setupPreloader() {
+        const preloader = document.createElement('div');
+        preloader.id = 'preloader';
+        preloader.innerHTML = `
+            <div class="spinner">
+                <div class="blob-spinner" style="background: rgba(168, 230, 207, 0.9)"></div>
+                <div class="blob-spinner" style="background: rgba(212, 165, 230, 0.9)"></div>
+                <div class="blob-spinner" style="background: rgba(165, 199, 230, 0.9)"></div>
+            </div>
+        `;
+        document.body.appendChild(preloader);
+        
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                preloader.style.opacity = '0';
+                setTimeout(() => preloader.remove(), 500);
+            }, 500);
+        });
+    }
+    
     init() {
-        // Create blobs
-        this.colorOptions.forEach(color => {
+        // Create blobs with initial theme
+        this.themes[this.currentTheme].colors.forEach(color => {
             this.blobs.push(new Blob(this.container, color));
         });
         
@@ -169,14 +253,18 @@ class BlobAnimator {
         logo.appendChild(sparkle2);
         
         logo.addEventListener('mouseenter', () => {
-            const randomColor = this.colorOptions[Math.floor(Math.random() * this.colorOptions.length)];
+            const randomColor = this.themes[this.currentTheme].colors[
+                Math.floor(Math.random() * this.themes[this.currentTheme].colors.length)
+            ];
             sparkle1.style.background = `radial-gradient(circle, ${randomColor} 0%, transparent 70%)`;
             sparkle2.style.background = `radial-gradient(circle, white 0%, transparent 70%)`;
             this.triggerShake(true);
         });
         
         logo.addEventListener('touchstart', () => {
-            const randomColor = this.colorOptions[Math.floor(Math.random() * this.colorOptions.length)];
+            const randomColor = this.themes[this.currentTheme].colors[
+                Math.floor(Math.random() * this.themes[this.currentTheme].colors.length)
+            ];
             sparkle1.style.background = `radial-gradient(circle, ${randomColor} 0%, transparent 70%)`;
             sparkle2.style.background = `radial-gradient(circle, white 0%, transparent 70%)`;
             this.triggerShake(true);
@@ -206,16 +294,57 @@ class BlobAnimator {
     
     setupDeviceMotion() {
         if (window.DeviceMotionEvent) {
-            let lastShakeTime = 0;
             window.addEventListener('devicemotion', (e) => {
-                if (Date.now() - lastShakeTime < 1000) return;
+                const now = Date.now();
+                if (now - this.lastShakeTime < this.themeChangeCooldown) return;
+                
                 const acc = e.accelerationIncludingGravity;
                 if (acc && (Math.abs(acc.x) > 15 || Math.abs(acc.y) > 15 || Math.abs(acc.z) > 15)) {
+                    this.changeTheme();
                     this.triggerShake();
-                    lastShakeTime = Date.now();
+                    this.lastShakeTime = now;
                 }
             });
         }
+    }
+
+    changeTheme() {
+        this.currentTheme = (this.currentTheme + 1) % this.themes.length;
+        const theme = this.themes[this.currentTheme];
+        
+        // Update blob colors
+        this.blobs.forEach((blob, i) => {
+            const colorIndex = i % theme.colors.length;
+            blob.color = theme.colors[colorIndex];
+            blob.element.style.background = blob.color;
+            blob.pulse.style.background = blob.color;
+        });
+        
+        // Update background
+        document.body.style.backgroundColor = theme.bg;
+        
+        // Show theme name notification
+        this.showThemeNotification(theme.name);
+    }
+
+    showThemeNotification(themeName) {
+        // Remove existing notification if present
+        const existingNotification = document.getElementById('theme-notification');
+        if (existingNotification) {
+            existingNotification.remove();
+        }
+        
+        // Create new notification
+        const notification = document.createElement('div');
+        notification.id = 'theme-notification';
+        notification.textContent = `${themeName} Theme`;
+        document.body.appendChild(notification);
+        
+        // Auto-hide after 2 seconds
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            setTimeout(() => notification.remove(), 500);
+        }, 2000);
     }
     
     handleResize() {
