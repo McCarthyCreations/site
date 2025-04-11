@@ -3,11 +3,9 @@ body {
     font-family: 'Montserrat', sans-serif;
     margin: 0;
     padding: 0;
-    color: #e0e0e0;
-    background: #1a1a2e;
     min-height: 100vh;
     overflow-x: hidden;
-    transition: background-color 0.5s ease;
+    transition: all 0.5s ease;
 }
 
 /* Preloader */
@@ -96,7 +94,6 @@ body {
     margin: 0 auto;
     padding: 30px;
     text-align: center;
-    background: rgba(30, 30, 46, 0.85);
     border-radius: 15px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     backdrop-filter: blur(8px);
@@ -109,10 +106,10 @@ body {
     width: 200px;
     height: auto;
     margin-bottom: 15px;
-    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.2));
     transition: all 0.3s ease;
     position: relative;
     cursor: pointer;
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.2));
 }
 
 .logo-img:hover, .logo-img:active {
@@ -121,7 +118,6 @@ body {
 
 .profile p {
     margin: 10px 0 30px;
-    color: #b8b8b8;
     font-size: 1rem;
 }
 
@@ -135,7 +131,6 @@ body {
     align-items: center;
     justify-content: center;
     gap: 10px;
-    color: #e0e0e0;
     text-decoration: none;
     padding: 15px;
     margin: 15px 0;
@@ -145,58 +140,29 @@ body {
 }
 
 .link-btn {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.link-btn:hover {
-    background: rgba(108, 92, 231, 0.3);
-    transform: translateY(-3px);
-    box-shadow: 0 5px 15px rgba(108, 92, 231, 0.2);
+    border: 1px solid;
 }
 
 /* Store Locations */
 .store-locations {
     margin: 30px 0;
     padding-top: 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid;
 }
 
 .store-locations h3 {
-    color: #b8b8b8;
     margin-bottom: 15px;
-}
-
-.location-btn {
-    background: rgba(100, 149, 237, 0.1);
-    border: 1px solid rgba(100, 149, 237, 0.3);
-}
-
-.location-btn:hover {
-    background: rgba(100, 149, 237, 0.3);
-    transform: translateY(-3px);
 }
 
 /* Payment Links */
 .payment-links {
     margin: 30px 0;
     padding-top: 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid;
 }
 
 .payment-links h3 {
-    color: #b8b8b8;
     margin-bottom: 15px;
-}
-
-.payment-btn {
-    background: rgba(0, 200, 83, 0.1);
-    border: 1px solid rgba(0, 200, 83, 0.3);
-}
-
-.payment-btn:hover {
-    background: rgba(0, 200, 83, 0.3);
-    transform: translateY(-3px);
 }
 
 /* Social Icons */
@@ -205,22 +171,13 @@ body {
 }
 
 .social-icons a {
-    color: #b8b8b8;
     font-size: 22px;
     margin: 0 12px;
     transition: all 0.3s ease;
 }
 
-.social-icons a:hover {
-    color: #6c5ce7;
-    transform: scale(1.2);
-}
-
-/* Buttons */
+/* Shake Button */
 .shake-button {
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-    border: 2px solid rgba(255, 255, 255, 0.2);
     border-radius: 50px;
     padding: 12px 24px;
     font-size: 1rem;
@@ -229,11 +186,7 @@ body {
     cursor: pointer;
     transition: all 0.3s ease;
     display: none;
-}
-
-.shake-button:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: scale(1.05);
+    border: 2px solid;
 }
 
 /* Animations */
@@ -312,20 +265,13 @@ body {
 .site-footer {
     text-align: center;
     padding: 12px 0;
-    background: rgba(30, 30, 46, 0.0);
-    border-top: 1px solid rgba(255, 255, 255, 0.0);
 }
 
 .site-footer a {
-    color: rgba(255, 255, 255, 0.6);
     font-size: 12px;
     font-family: 'Montserrat', sans-serif;
     text-decoration: none;
     transition: color 0.3s ease;
-}
-
-.site-footer a:hover {
-    color: rgba(255, 255, 255, 0.9);
 }
 
 /* Mobile styles */
@@ -344,4 +290,156 @@ body {
     .logo-img:active {
         transform: scale(1.5);
     }
+}
+
+/* Theme-specific styles */
+.theme-normal {
+    --bg-color: #1a1a2e;
+    --text-color: #e0e0e0;
+    --accent-color: #6c5ce7;
+    --button-bg: rgba(255, 255, 255, 0.1);
+    --button-border: rgba(255, 255, 255, 0.2);
+    --container-bg: rgba(30, 30, 46, 0.85);
+    --border-color: rgba(255, 255, 255, 0.1);
+    --logo-filter: none;
+    --location-btn-bg: rgba(100, 149, 237, 0.1);
+    --location-btn-border: rgba(100, 149, 237, 0.3);
+    --payment-btn-bg: rgba(0, 200, 83, 0.1);
+    --payment-btn-border: rgba(0, 200, 83, 0.3);
+}
+
+.theme-winter {
+    --bg-color: #0e1a2e;
+    --text-color: #e0f0ff;
+    --accent-color: #a0d0ff;
+    --button-bg: rgba(160, 208, 255, 0.1);
+    --button-border: rgba(160, 208, 255, 0.3);
+    --container-bg: rgba(20, 40, 60, 0.85);
+    --border-color: rgba(160, 208, 255, 0.2);
+    --logo-filter: brightness(1.2) contrast(0.9);
+    --location-btn-bg: rgba(160, 210, 255, 0.1);
+    --location-btn-border: rgba(160, 210, 255, 0.3);
+    --payment-btn-bg: rgba(200, 230, 255, 0.1);
+    --payment-btn-border: rgba(200, 230, 255, 0.3);
+}
+
+.theme-fall {
+    --bg-color: #2e1a0e;
+    --text-color: #ffe0c0;
+    --accent-color: #ff9040;
+    --button-bg: rgba(255, 144, 64, 0.1);
+    --button-border: rgba(255, 144, 64, 0.3);
+    --container-bg: rgba(60, 30, 20, 0.85);
+    --border-color: rgba(255, 144, 64, 0.2);
+    --logo-filter: sepia(0.3) brightness(0.9);
+    --location-btn-bg: rgba(230, 150, 90, 0.1);
+    --location-btn-border: rgba(230, 150, 90, 0.3);
+    --payment-btn-bg: rgba(200, 120, 80, 0.1);
+    --payment-btn-border: rgba(200, 120, 80, 0.3);
+}
+
+.theme-summer {
+    --bg-color: #1a2e1a;
+    --text-color: #f0ffe0;
+    --accent-color: #80ff80;
+    --button-bg: rgba(128, 255, 128, 0.1);
+    --button-border: rgba(128, 255, 128, 0.3);
+    --container-bg: rgba(40, 80, 40, 0.85);
+    --border-color: rgba(128, 255, 128, 0.2);
+    --logo-filter: saturate(1.5);
+    --location-btn-bg: rgba(100, 200, 255, 0.1);
+    --location-btn-border: rgba(100, 200, 255, 0.3);
+    --payment-btn-bg: rgba(100, 230, 180, 0.1);
+    --payment-btn-border: rgba(100, 230, 180, 0.3);
+}
+
+.theme-chaotic {
+    --bg-color: #000000;
+    --text-color: #ffffff;
+    --accent-color: #ff00ff;
+    --button-bg: rgba(255, 0, 255, 0.1);
+    --button-border: rgba(255, 0, 255, 0.3);
+    --container-bg: rgba(0, 0, 0, 0.85);
+    --border-color: rgba(255, 0, 255, 0.2);
+    --logo-filter: contrast(1.5) hue-rotate(90deg);
+    --location-btn-bg: rgba(150, 0, 255, 0.1);
+    --location-btn-border: rgba(150, 0, 255, 0.3);
+    --payment-btn-bg: rgba(0, 255, 200, 0.1);
+    --payment-btn-border: rgba(0, 255, 200, 0.3);
+}
+
+/* Apply theme variables */
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+.container {
+    background: var(--container-bg);
+    border-color: var(--border-color);
+}
+
+.link-btn {
+    background: var(--button-bg);
+    border-color: var(--button-border);
+    color: var(--text-color);
+}
+
+.link-btn:hover {
+    background: color-mix(in srgb, var(--button-bg) 70%, var(--accent-color));
+}
+
+.location-btn {
+    background: var(--location-btn-bg);
+    border: 1px solid var(--location-btn-border);
+    color: var(--text-color);
+}
+
+.location-btn:hover {
+    background: color-mix(in srgb, var(--location-btn-bg) 70%, var(--accent-color));
+}
+
+.payment-btn {
+    background: var(--payment-btn-bg);
+    border: 1px solid var(--payment-btn-border);
+    color: var(--text-color);
+}
+
+.payment-btn:hover {
+    background: color-mix(in srgb, var(--payment-btn-bg) 70%, var(--accent-color));
+}
+
+.social-icons a {
+    color: var(--text-color);
+}
+
+.social-icons a:hover {
+    color: var(--accent-color);
+}
+
+.shake-button {
+    background: color-mix(in srgb, var(--button-bg) 50%, var(--accent-color));
+    border-color: var(--accent-color);
+    color: var(--text-color);
+}
+
+.store-locations h3, .payment-links h3 {
+    color: var(--accent-color);
+    text-shadow: 0 0 5px color-mix(in srgb, var(--accent-color) 20%, transparent);
+}
+
+.store-locations, .payment-links {
+    border-top-color: color-mix(in srgb, var(--accent-color) 15%, transparent);
+}
+
+.site-footer a {
+    color: color-mix(in srgb, var(--text-color) 70%, transparent);
+}
+
+.site-footer a:hover {
+    color: var(--text-color);
+}
+
+.logo-img {
+    filter: var(--logo-filter, none) drop-shadow(0 0 10px rgba(255, 255, 255, 0.2));
 }

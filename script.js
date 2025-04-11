@@ -137,8 +137,9 @@ class BlobAnimator {
         this.container = document.getElementById('blobs-container');
         this.blobs = [];
         this.themes = [
-            { // Normal (Original)
+            { 
                 name: "Normal",
+                class: "theme-normal",
                 colors: [
                     'rgba(168, 230, 207, 0.9)',  // green
                     'rgba(212, 165, 230, 0.9)',  // purple
@@ -146,10 +147,11 @@ class BlobAnimator {
                     'rgba(255, 170, 165, 0.9)',  // red
                     'rgba(255, 211, 182, 0.9)'   // yellow
                 ],
-                bg: '#1a1a2e'
+                logoFilter: null
             },
-            { // Winter
+            { 
                 name: "Winter",
+                class: "theme-winter",
                 colors: [
                     'rgba(200, 230, 255, 0.9)',  // light blue
                     'rgba(220, 240, 255, 0.9)',  // pale blue
@@ -157,10 +159,11 @@ class BlobAnimator {
                     'rgba(230, 240, 250, 0.9)',  // frost white
                     'rgba(160, 210, 255, 0.9)'   // deep winter blue
                 ],
-                bg: '#0e1a2e'
+                logoFilter: "brightness(1.2) contrast(0.9)"
             },
-            { // Fall
+            { 
                 name: "Fall",
+                class: "theme-fall",
                 colors: [
                     'rgba(230, 170, 100, 0.9)',  // pumpkin
                     'rgba(200, 120, 80, 0.9)',   // rust
@@ -168,10 +171,11 @@ class BlobAnimator {
                     'rgba(180, 100, 60, 0.9)',   // cinnamon
                     'rgba(210, 140, 70, 0.9)'    // caramel
                 ],
-                bg: '#2e1a0e'
+                logoFilter: "sepia(0.3) brightness(0.9)"
             },
-            { // Summer
+            { 
                 name: "Summer",
+                class: "theme-summer",
                 colors: [
                     'rgba(255, 200, 100, 0.9)',  // sunshine
                     'rgba(100, 230, 180, 0.9)',  // mint
@@ -179,10 +183,11 @@ class BlobAnimator {
                     'rgba(100, 200, 255, 0.9)',  // sky blue
                     'rgba(230, 100, 230, 0.9)'   // pink
                 ],
-                bg: '#1a2e1a'
+                logoFilter: "saturate(1.5)"
             },
-            { // Chaotic
+            { 
                 name: "Chaotic",
+                class: "theme-chaotic",
                 colors: [
                     'rgba(255, 0, 100, 0.9)',    // hot pink
                     'rgba(0, 255, 200, 0.9)',    // electric teal
@@ -190,7 +195,7 @@ class BlobAnimator {
                     'rgba(150, 0, 255, 0.9)',    // purple
                     'rgba(0, 255, 50, 0.9)'      // neon green
                 ],
-                bg: '#000000'
+                logoFilter: "contrast(1.5) hue-rotate(90deg)"
             }
         ];
         this.currentTheme = 0;
@@ -227,6 +232,9 @@ class BlobAnimator {
             this.blobs.push(new Blob(this.container, color));
         });
         
+        // Apply initial theme
+        this.applyTheme(this.themes[this.currentTheme]);
+        
         // Set up interactions
         this.setupLogoEffects();
         this.setupShakeButton();
@@ -252,23 +260,18 @@ class BlobAnimator {
         sparkle2.className = 'sparkle';
         logo.appendChild(sparkle2);
         
-        logo.addEventListener('mouseenter', () => {
+        const triggerThemeChange = () => {
+            this.changeTheme();
             const randomColor = this.themes[this.currentTheme].colors[
                 Math.floor(Math.random() * this.themes[this.currentTheme].colors.length)
             ];
             sparkle1.style.background = `radial-gradient(circle, ${randomColor} 0%, transparent 70%)`;
             sparkle2.style.background = `radial-gradient(circle, white 0%, transparent 70%)`;
             this.triggerShake(true);
-        });
+        };
         
-        logo.addEventListener('touchstart', () => {
-            const randomColor = this.themes[this.currentTheme].colors[
-                Math.floor(Math.random() * this.themes[this.currentTheme].colors.length)
-            ];
-            sparkle1.style.background = `radial-gradient(circle, ${randomColor} 0%, transparent 70%)`;
-            sparkle2.style.background = `radial-gradient(circle, white 0%, transparent 70%)`;
-            this.triggerShake(true);
-        }, { passive: true });
+        logo.addEventListener('mouseenter', triggerThemeChange);
+        logo.addEventListener('touchstart', triggerThemeChange, { passive: true });
     }
     
     triggerShake(strongForce = false) {
@@ -288,7 +291,10 @@ class BlobAnimator {
     setupShakeButton() {
         const shakeBtn = document.getElementById('shake-btn');
         if (shakeBtn) {
-            shakeBtn.addEventListener('click', () => this.triggerShake());
+            shakeBtn.addEventListener('click', () => {
+                this.changeTheme();
+                this.triggerShake();
+            });
         }
     }
     
@@ -311,6 +317,18 @@ class BlobAnimator {
     changeTheme() {
         this.currentTheme = (this.currentTheme + 1) % this.themes.length;
         const theme = this.themes[this.currentTheme];
+        this.applyTheme(theme);
+        this.showThemeNotification(theme.name);
+    }
+
+    applyTheme(theme) {
+        // Remove all theme classes first
+        document.body.classList.remove(
+            'theme-normal', 'theme-winter', 'theme-fall', 'theme-summer', 'theme-chaotic'
+        );
+        
+        // Apply new theme class
+        document.body.classList.add(theme.class);
         
         // Update blob colors
         this.blobs.forEach((blob, i) => {
@@ -319,12 +337,14 @@ class BlobAnimator {
             blob.element.style.background = blob.color;
             blob.pulse.style.background = blob.color;
         });
-        
-        // Update background
-        document.body.style.backgroundColor = theme.bg;
-        
-        // Show theme name notification
-        this.showThemeNotification(theme.name);
+
+        // Update logo filter
+        const logo = document.getElementById('logo');
+        if (theme.logoFilter) {
+            logo.style.filter = `${theme.logoFilter} drop-shadow(0 0 10px rgba(255, 255, 255, 0.2))`;
+        } else {
+            logo.style.filter = 'drop-shadow(0 0 10px rgba(255, 255, 255, 0.2))';
+        }
     }
 
     showThemeNotification(themeName) {
